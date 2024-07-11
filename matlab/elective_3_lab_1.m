@@ -1,5 +1,5 @@
 % Read the Image
-img = imread("C:\Users\Earl\Downloads\yoda.jpg");
+img = imread("..\images\mikha.jpg");
 
 % Rotate by 45 degrees
 rotated_img = imrotate(img, 45);

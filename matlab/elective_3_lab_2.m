@@ -1,5 +1,5 @@
 % Read an image
-img = imread("images\mikha.jpeg");
+img = imread("..\images\mikha.jpeg");
 
 % Display the image
 figure(1)
