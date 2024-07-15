@@ -1,39 +1,50 @@
 % Acquire the Image
-img = imread("images\mikha_malabo.jpeg");
+img = imread("..\images\mikha.jpeg");
+
+gray_img = rgb2gray(img);
 
 % Show the original image
 figure(1);
-imshow(img); 
+imshow(gray_img); 
 title("Original Image");
 
-% Use Gaussian filter for Image Restoration
-% Create a Gaussian filter
-gaussian_filter = fspecial('gaussian', 7, 10);
+% Simulate and Restore Motion Blur Without Noise
+PSF = fspecial('motion', 21, 21);
+iDouble = im2double(gray_img);
+blurred = imfilter(iDouble, PSF, 'conv', 'circular');
+figure (2);
+imshow(blurred); title('Blurred Image')
 
-% Apply the filter to the image
-gaussian_img = imfilter(img, gaussian_filter, "symmetric", "conv");
+% Restore the image using the Wiener Filter
+weiner = deconvwnr(blurred, PSF);
 
-% Show the filtered image
-figure(2);
-imshow(gaussian_img); 
-title("Gaussian Blurred Image");
-
-% Convert image to double precision for further processing
-Idouble = im2double(img);
-
-% Estimate the noise variance (you can set this manually or calculate based on your image)
-noise_var = 0.001;
-
-% Calculate the signal variance
-signal_var = var(Idouble(:));
-
-% Calculate the Noise-to-Signal Ratio (NSR)
-NSR = noise_var / signal_var;
-
-% Deblur the image using the Wiener deconvolution
-deblurred_img = deconvwnr(im2double(gaussian_img), gaussian_filter, NSR);
-
-% Show the deblurred image
+% Show the restored image
 figure(3);
-imshow(deblurred_img); 
-title("Deblurred Image");
+imshow(weiner); title('Restored Image');
+
+% Parameter Modification
+
+% Simulate and Restore Motion Blur and Gaussian Noise
+noise_mean = 0;
+noise_var = 0.0001;
+blurred_noisy = imnoise(blurred,'gaussian',noise_mean,noise_var);
+
+% Show the blurred and noisy image
+figure(4);
+imshow(blurred_noisy); title('Blurred and Noisy Image');
+
+% Restore the image using the Wiener Filter
+weiner2 = deconvwnr(blurred_noisy,PSF);
+
+% Show the restored image (NSR = 0)
+figure(5)
+imshow(weiner2); title('Restoration of Blurred Noisy Image (NSR = 0)')
+
+% Restore the image using the Wiener Filter with a more realtisc value
+signal_var = var(iDouble(:));
+NSR = noise_var / signal_var;
+weiner3 = deconvwnr(blurred_noisy,PSF,NSR);
+
+% Show the restored image (Estimated NSR)
+figure(6)
+imshow(weiner3); title('Restoration of Blurred Noisy Image (Estimated NSR)')

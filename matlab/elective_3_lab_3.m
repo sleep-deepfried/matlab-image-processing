@@ -158,7 +158,3 @@ figure(12)
 imshowpair(img_noise, median_img_1, 'montage'); title("Median Filtered Image");
 imwrite(median_img_1,'..\processed_images\lab-3\greyscale\mikha_median.png', 'png');
 
-
-
-
-
